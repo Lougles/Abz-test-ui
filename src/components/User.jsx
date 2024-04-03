@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Container, Dropdown, ListGroup} from "react-bootstrap";
 import ApiService from "../service/axios.requests";
 import ToastNotification from "./Toast";
@@ -16,16 +16,7 @@ const User = () => {
   const [dataLinks, setDataLinks] = useState();
   const [shouldFetch, setShouldFetch] = useState(true);
   
-  
-  
-  useEffect(() => {
-    if (shouldFetch) {
-      fetchUsers(currentPage);
-    }
-    setShouldFetch(true);
-  }, [currentPage, usersPerPage]);
-  
-  const fetchUsers = async (page) => {
+  const fetchUsers = useCallback(async (page) => {
     try {
       const response = await ApiService.getAllUsers(page, usersPerPage, usersPerPage * (page - 1));
       if (response?.data?.success) {
@@ -40,7 +31,16 @@ const User = () => {
     } catch (e) {
       setToast({ show: true, message: e.message, type: 'error' });
     }
-  };
+  }, [usersPerPage, setUser, setDataLinks, setCurrentPage, setTotalPages, setToast])
+  
+  useEffect(() => {
+    if (shouldFetch) {
+      fetchUsers(currentPage);
+    }
+    setShouldFetch(true);
+  }, [currentPage, usersPerPage, fetchUsers, shouldFetch]);
+  
+
   
   const handleFirstPage = () => {
     setCurrentPage(1);
@@ -118,7 +118,7 @@ const User = () => {
       <ListGroup>
         {user.map((item, index) => (
           <ListGroup.Item key={index}>
-            <img style={{marginRight: '20px'}} src={item.photo}/>
+            <img alt={item.img} style={{marginRight: '20px'}} src={item.photo}/>
             {item.name},
             <span> Позиція{ item.position_id}:  {item.position}, </span>
             <span> Тел: {item.phone}</span>
