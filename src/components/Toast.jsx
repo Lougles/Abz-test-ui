@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Toast } from 'react-bootstrap';
 
-const ToastNotification = ({ show, onClose, message, type, delay = 3000 }) => {
+const ToastNotification = ({ show, onClose, message, type, delay = 6000 }) => {
   const [showToast, setShowToast] = useState(show);
   
   useEffect(() => {
